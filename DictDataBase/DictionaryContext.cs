@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ namespace DictDataBase
 {
     public class DictionaryContext : DbContext
     {
+        IConfiguration Configuration => new ConfigurationBuilder()
+            .AddJsonFile("appSettings.json")
+            .Build();
         public DbSet<Word> Words { get; set; }
-        private string DbPath => "dict.db";
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -20,6 +23,6 @@ namespace DictDataBase
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite($"Data Source={DbPath}");
+            => options.UseSqlite(Configuration.GetConnectionString("dictDataBase"));
     }
 }
